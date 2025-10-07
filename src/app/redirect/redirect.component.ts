@@ -4,8 +4,8 @@ import { Subscription, interval } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-redirect',
-  template: `
+    selector: 'app-redirect',
+    template: `
     <div class="redirect-container">
       <div class="redirect-card">
         <div class="icon-container">
@@ -65,7 +65,8 @@ import { take } from 'rxjs/operators';
       </div>
     </div>
   `,
-  styleUrls: ['./redirect.component.scss']
+    styleUrls: ['./redirect.component.scss'],
+    standalone: false
 })
 export class RedirectComponent implements OnInit, OnDestroy {
   public targetUrl: string = '';
