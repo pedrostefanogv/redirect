@@ -81,7 +81,8 @@ export class RedirectComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params: Record<string, string>) => {
-      this.targetUrl = params['url'] || params['deeplink'] || '';
+      const raw = params['url'] || params['deeplink'] || '';
+      this.targetUrl = this.normalizeUrl(raw);
       this.loading = false;
       
       if (this.targetUrl) {
@@ -144,5 +145,33 @@ export class RedirectComponent implements OnInit, OnDestroy {
         window.location.href = this.targetUrl;
       }
     }
+  }
+
+  // Normaliza URLs recebidas sem protocolo (ex.: exemplo.com -> https://exemplo.com)
+  // e evita paths relativos que o GitHub Pages converte em múltiplas barras.
+  private normalizeUrl(input: string): string {
+    if (!input) return '';
+
+    const trimmed = input.trim();
+
+    // Se for um deeplink (tem esquema e não começa com http), manter
+    const schemeMatch = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed);
+    if (schemeMatch && !trimmed.toLowerCase().startsWith('http')) {
+      return trimmed;
+    }
+
+    // Se começar com // (protocol-relative), prefixar https:
+    if (trimmed.startsWith('//')) {
+      return `https:${trimmed}`;
+    }
+
+    // Se já começa com http(s)://, retorna direto
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    // Se parece um domínio simples ou caminho, prefixar https://
+    // Ex.: exemplo.com, www.exemplo.com, sub.exemplo.com/path
+    return `https://${trimmed.replace(/^\/*/, '')}`;
   }
 }
