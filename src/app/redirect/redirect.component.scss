@@ -119,6 +119,38 @@
   margin-top: 0.5rem;
 }
 
+.github-link {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.github-repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.github-repo-link:hover {
+  background-color: var(--surface-color);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.github-repo-link svg {
+  flex-shrink: 0;
+}
+
 .error-message {
   padding: 2rem;
   background-color: var(--background-color);
@@ -226,6 +258,11 @@
   
   .error-message h3 {
     font-size: 1.25rem;
+  }
+  
+  .github-repo-link {
+    padding: 0.625rem 1rem;
+    font-size: 0.8rem;
   }
 }
 
