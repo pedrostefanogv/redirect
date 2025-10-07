@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Redirect Page - 404</title>
+  <base href="/redirect/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Redirect 404 para a página principal para SPA routing
+    const path = window.location.pathname.replace('/redirect', '');
+    const search = window.location.search;
+    window.history.replaceState(null, null, '/redirect/' + (path === '/' ? '' : path) + search);
+    window.location.reload();
+  </script>
+</head>
+<body>
+  <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+    <h1>Redirecionando...</h1>
+    <p>Se não for redirecionado automaticamente, <a href="/redirect/">clique aqui</a>.</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<div class="app-container" [attr.data-theme]="currentTheme">
+  <button 
+    class="theme-toggle" 
+    (click)="toggleTheme()"
+    [attr.aria-label]="currentTheme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
+  >
+    <span class="theme-icon">{{ currentTheme === 'dark' ? '☀️' : '🌙' }}</span>
+  </button>
+  
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
