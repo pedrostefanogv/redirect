@@ -81,7 +81,7 @@ import { take } from 'rxjs/operators';
 export class RedirectComponent implements OnInit, OnDestroy {
   public targetUrl: string = '';
   public displayUrl: string = '';
-  public countdown: number = 5;
+  public countdown: number = 3;
   public loading: boolean = true;
   public isCanceled: boolean = false;
   
