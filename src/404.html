@@ -1,23 +1,79 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <title>Redirect Page - 404</title>
-  <base href="/redirect/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script>
-    // Redirect 404 para a página principal para SPA routing
-    const path = window.location.pathname.replace('/redirect', '');
-    const search = window.location.search;
-    window.history.replaceState(null, null, '/redirect/' + (path === '/' ? '' : path) + search);
-    window.location.reload();
-  </script>
-</head>
-<body>
-  <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-    <h1>Redirecionando...</h1>
-    <p>Se não for redirecionado automaticamente, <a href="/redirect/">clique aqui</a>.</p>
-  </div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirect Page - 404</title>
+    <base href="/redirect/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      (function () {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const raw = params.get("url") || params.get("deeplink");
+          if (raw) {
+            const delayParam = Number(params.get("delay"));
+            const delaySeconds =
+              Number.isFinite(delayParam) && delayParam >= 0
+                ? Math.min(30, Math.floor(delayParam))
+                : 0;
+
+            const target = normalize(raw);
+            if (target) {
+              const go = () => window.location.replace(target);
+              return delaySeconds > 0
+                ? setTimeout(go, delaySeconds * 1000)
+                : go();
+            }
+          }
+        } catch (err) {
+          console.warn(
+            "Fallback redirect falhou no 404, seguindo para SPA:",
+            err
+          );
+        }
+
+        // Redirect 404 para a página principal para SPA routing
+        const path = window.location.pathname.replace("/redirect", "");
+        const search = window.location.search;
+        window.history.replaceState(
+          null,
+          null,
+          "/redirect/" + (path === "/" ? "" : path) + search
+        );
+        window.location.reload();
+
+        function normalize(input) {
+          const trimmed = (input || "").trim();
+          if (!trimmed) return "";
+
+          const schemeMatch = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed);
+          if (schemeMatch && !trimmed.toLowerCase().startsWith("http")) {
+            return trimmed;
+          }
+
+          if (trimmed.startsWith("//")) {
+            return "https:" + trimmed;
+          }
+
+          if (/^https?:\/\//i.test(trimmed)) {
+            return trimmed;
+          }
+
+          return "https://" + trimmed.replace(/^\/*/, "");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div
+      style="text-align: center; padding: 50px; font-family: Arial, sans-serif"
+    >
+      <h1>Redirecionando...</h1>
+      <p>
+        Se não for redirecionado automaticamente,
+        <a href="/redirect/">clique aqui</a>.
+      </p>
+    </div>
+  </body>
 </html>

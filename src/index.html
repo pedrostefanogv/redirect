@@ -1,15 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <title>Redirect Page</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <meta name="description" content="Página de redirecionamento automático para aplicativos e URLs">
-  <meta name="theme-color" content="#1976d2">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirect Page</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta
+      name="description"
+      content="Página de redirecionamento automático para aplicativos e URLs"
+    />
+    <meta name="theme-color" content="#1976d2" />
+    <script>
+      (function () {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const raw = params.get("url") || params.get("deeplink");
+          if (!raw) return;
+
+          const delayParam = Number(params.get("delay"));
+          const delaySeconds =
+            Number.isFinite(delayParam) && delayParam >= 0
+              ? Math.min(30, Math.floor(delayParam))
+              : 0;
+
+          const target = normalize(raw);
+          if (!target) return;
+
+          const go = () => window.location.replace(target);
+          if (delaySeconds > 0) {
+            setTimeout(go, delaySeconds * 1000);
+          } else {
+            go();
+          }
+        } catch (err) {
+          console.warn("Fallback redirect falhou, seguindo para Angular:", err);
+        }
+
+        function normalize(input) {
+          const trimmed = (input || "").trim();
+          if (!trimmed) return "";
+
+          const schemeMatch = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed);
+          if (schemeMatch && !trimmed.toLowerCase().startsWith("http")) {
+            return trimmed;
+          }
+
+          if (trimmed.startsWith("//")) {
+            return "https:" + trimmed;
+          }
+
+          if (/^https?:\/\//i.test(trimmed)) {
+            return trimmed;
+          }
+
+          return "https://" + trimmed.replace(/^\/*/, "");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
 </html>
