@@ -134,14 +134,25 @@ export class RedirectComponent implements OnInit, OnDestroy {
   private startCountdown(): void {
     if (this.totalDuration <= 0) return;
 
-    const timer$ = interval(1000).pipe(take(this.totalDuration));
+    // Usa interval de 100ms para animação suave do círculo
+    const intervalMs = 100;
+    const totalTicks = this.totalDuration * (1000 / intervalMs);
+
+    const timer$ = interval(intervalMs).pipe(take(totalTicks));
 
     this.subscription.add(
-      timer$.subscribe((value: number) => {
-        this.countdown = this.totalDuration - value - 1;
-        this.updateProgress();
+      timer$.subscribe((tick: number) => {
+        const elapsedSeconds = ((tick + 1) * intervalMs) / 1000;
+        const remainingSeconds = this.totalDuration - elapsedSeconds;
 
-        if (this.countdown <= 0) {
+        // Atualiza o countdown apenas quando muda o segundo inteiro
+        this.countdown = Math.ceil(remainingSeconds);
+
+        // Atualiza a animação do progresso de forma suave
+        this.updateProgressSmooth(elapsedSeconds);
+
+        // Redireciona quando o tempo acabar
+        if (remainingSeconds <= 0) {
           this.redirect();
         }
       })
@@ -156,6 +167,17 @@ export class RedirectComponent implements OnInit, OnDestroy {
 
     const elapsed = Math.max(0, this.totalDuration - this.countdown);
     const progress = elapsed / this.totalDuration;
+    this.strokeDashoffset = this.circumference - progress * this.circumference;
+  }
+
+  // Atualiza o progresso de forma suave baseado no tempo decorrido em segundos (com decimais)
+  private updateProgressSmooth(elapsedSeconds: number): void {
+    if (this.totalDuration <= 0) {
+      this.strokeDashoffset = this.circumference;
+      return;
+    }
+
+    const progress = Math.min(1, elapsedSeconds / this.totalDuration);
     this.strokeDashoffset = this.circumference - progress * this.circumference;
   }
 
