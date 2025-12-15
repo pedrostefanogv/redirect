@@ -194,9 +194,17 @@ export class RedirectComponent implements OnInit, OnDestroy {
   }
 
   private parseDelay(delayParam?: string): number {
+    if (
+      delayParam === undefined ||
+      delayParam === null ||
+      delayParam.trim() === ""
+    ) {
+      return 3;
+    }
+
     const parsed = Number(delayParam);
     if (!Number.isFinite(parsed) || parsed < 0) {
-      return 0;
+      return 3;
     }
 
     return Math.min(30, Math.floor(parsed));
